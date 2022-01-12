@@ -8,6 +8,7 @@ from sklearn.model_selection import train_test_split
 from tensorflow.keras.utils import to_categorical
 from keras.models import Sequential
 from keras.layers import Conv2D, MaxPool2D, Dense, Flatten, Dropout
+from sklearn.metrics import accuracy_score
 
 data = []
 labels = []
@@ -81,3 +82,22 @@ plt.xlabel('Epochs')
 plt.ylabel('Loss')
 plt.legend()
 plt.show()
+
+#Model testing
+
+y_t = pd.read_csv('Test.csv')
+labels = y_t["ClassId"].values
+imgs = y_t["Path"].values
+data = []
+
+for img in imgs:
+    image = Image.open(img)
+    image = image.resize((30,30))
+    data.append(np.array(image))
+
+X_t = np.array(data)
+pred = model.predict_classes(X_t)
+
+print(accuracy_score(labels, pred))
+
+model.save('traffic_classifier.h5')
