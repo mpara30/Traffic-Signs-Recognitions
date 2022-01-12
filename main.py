@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plot
+import matplotlib.pyplot as plt
 import tensorflow as tf
 from PIL import Image
 import os
@@ -32,17 +32,17 @@ labels = np.array(labels)
 
 print(data.shape, labels.shape)
 
-X_t1, X_t2, y_t1, y_t2 = train_test_split(data, labels, test_size=0.2, random_state=42)
-print(X_t1.shape, X_t2.shape, y_t1.shape, y_t2.shape)
+X_train, X_test, y_train, y_test = train_test_split(data, labels, test_size=0.2, random_state=42)
+print(X_train.shape, X_test.shape, y_train.shape, y_test.shape)
 
-y_t1 = to_categorical(y_t1, 43)
-y_t2 = to_categorical(y_t2, 43)
+y_train = to_categorical(y_train, 43)
+y_test = to_categorical(y_test, 43)
 
 # Model Build
 
 model = Sequential()
 
-model.add(Conv2D(filters=32, kernel_size=(5, 5), activation='relu'))
+model.add(Conv2D(filters=32, kernel_size=(5, 5), activation='relu', input_shape=X_train.shape[1:]))
 model.add(Conv2D(filters=32, kernel_size=(5, 5), activation='relu'))
 model.add(MaxPool2D(pool_size=(2, 2)))
 model.add(Dropout(rate=0.25))
@@ -58,3 +58,26 @@ model.add(Dense(43, activation='softmax'))
 #Compilation
 
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+
+epochs = 15
+history = model.fit(X_train, y_train, batch_size=64, epochs=epochs, validation_data=(X_test, y_test))
+
+#Plotting graphs
+
+plt.figure(0)
+plt.plot(history.history['accuracy'], label='training accuracy')
+plt.plot(history.history['val_accuracy'], label='val accuracy')
+plt.title('Accuracy')
+plt.xlabel('Epochs')
+plt.ylabel('Accuracy')
+plt.legend()
+plt.show()
+
+plt.figure(1)
+plt.plot(history.history['loss'], label='training loss')
+plt.plot(history.history['val_loss'], label='val loss')
+plt.title('Loss')
+plt.xlabel('Epochs')
+plt.ylabel('Loss')
+plt.legend()
+plt.show()
