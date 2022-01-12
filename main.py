@@ -96,8 +96,9 @@ for img in imgs:
     data.append(np.array(image))
 
 X_t = np.array(data)
-pred = model.predict_classes(X_t)
+predict_x = model.predict(X_t)
+classes_x = np.argmax(predict_x, axis=1)
 
-print(accuracy_score(labels, pred))
+#print(accuracy_score(labels, predict_x))
 
 model.save('traffic_classifier.h5')
